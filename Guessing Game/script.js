@@ -1,46 +1,83 @@
 'use strict';
 
-const btn = document.querySelector('.check');
-const btn_again = document.querySelector('.again');
-const input_field = document.querySelector('.guess');
-const message = document.querySelector('.message');
-const number = document.querySelector('.number');
-const score = document.querySelector('.score');
+const genNewNumber = () => Math.round(Math.random() * 19 + 1);
 
-let genNewNumber = () => Math.round(Math.random() * 20);
+let game = {
+  btn: document.querySelector('.check'),
+  btn_again: document.querySelector('.again'),
+  input_field: document.querySelector('.guess'),
+  message: document.querySelector('.message'),
+  number: document.querySelector('.number'),
+  correctNumber: genNewNumber(),
+  score: document.querySelector(".score"),
+  highscore: document.querySelector('.highscore'),
+  numOfTries: 1,
 
-function checkForMatch(guess, correctNumber) {
-  guess != correctNumber 
-    ? loseGame(message) 
-    : winGame(message, correctNumber);
-}
+  getTextAsNumber: function (element) {
+    return Number(element.textContent);
+  },
 
-function winGame(message, correctNumber) {
-  message.textContent = 'You got it!';
-  number.textContent = correctNumber;
-}
+  /* Wish I could use an arrow function here */
+  checkForMatch: function () {
+    this.input_field.value != this.correctNumber 
+      ? this.loseGame()
+      : this.winGame()
+  },
 
-function loseGame(message) {
-  message.textContent = 'Try again!';
-}
+  winGame: function () {
+    this.message.textContent = 'You got it!';
+    this.number.textContent = this.correctNumber;
+    this.btn.classList.toggle("hidden");
+    if (game.getTextAsNumber(this.score) < game.getTextAsNumber(this.highscore)) { 
+      this.highscore.textContent = 0;
+      this.updateScore(this.highscore, this.getTextAsNumber(this.score)); 
+    } else {
+      alert("Your score isn't low enough! Try again.");
+    }
+    this.btn_again.classList.toggle("hidden");
+  },
 
-function resetGame(message, score) {
-  message.textContent = "Start guessing!";
-  score.value = 0;
+  loseGame: function () {
+    if (this.input_field.value < this.correctNumber) {
+      this.message.textContent = "Higher...";
+      console.log("Higher");
+    } else {
+      this.message.textContent = "Lower...";
+      console.log("Lower");
+    }
+    this.updateScore(this.score, this.numOfTries);
+    this.numOfTries++;
+
+  },
+
+  resetGame: function () {
+    this.message.textContent = "Start guessing!";
+    this.btn_again.classList.toggle("hidden");
+    this.btn.classList.toggle("hidden");
+    this.correctNumber = genNewNumber();
+    this.input_field.value = "";
+    this.score.textContent = 0;
+    this.numOfTries = 0;
+  },
   
+  updateScore: function (element, amount) {
+    element.textContent = (this.getTextAsNumber(element) + amount);
+  },
+
 }
 
-// function
-
-let correctNumber = genNewNumber();
-
-btn.addEventListener('click', function () {
-  const guess = Number(input_field.value);
+// functionality
+game.btn.addEventListener('click', function () {
+  const guess = Number(game.input_field.value);
 
   if (!guess) {
-    message.textContent = 'Enter a guess!';
+    game.message.textContent = 'Enter a guess!';
   } else {
-    checkForMatch(input_field.value, correctNumber);
+    game.checkForMatch();
   }
-  console.log(`The number is ${correctNumber}`);
+  console.log(`The number is ${game.correctNumber}`);
+});
+
+game.btn_again.addEventListener("click", function () {
+  game.resetGame();
 });
