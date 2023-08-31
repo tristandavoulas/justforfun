@@ -25,7 +25,7 @@ let game = {
   },
 
   winGame: function () {
-    this.message.textContent = 'You got it!';
+    this.message_textContent = 'You got it!';
     this.number.textContent = this.correctNumber;
     this.btn.classList.toggle("hidden");
     if (game.getTextAsNumber(this.score) < game.getTextAsNumber(this.highscore)) { 
@@ -40,10 +40,8 @@ let game = {
   loseGame: function () {
     if (this.input_field.value < this.correctNumber) {
       this.message.textContent = "Higher...";
-      console.log("Higher");
     } else {
       this.message.textContent = "Lower...";
-      console.log("Lower");
     }
     this.updateScore(this.score, this.numOfTries);
     this.numOfTries++;
